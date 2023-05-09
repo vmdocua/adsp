@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -87,6 +88,22 @@ public class LeetCode2506
 		}
 	}
 
+	public record Tuple(String word, int hash) {}
+
+	public static class TaskStream2 implements Task
+	{
+		@Override
+		public int countPairs(List<String> lst) throws Exception
+		{
+			log.debug("countPairs(lst=...)");
+			return (lst==null) ? 0 : lst.stream()
+				.filter(s-> s!=null && s.length()>0 )
+				.map( s -> new Tuple(s, s.chars().reduce(0, (v, ch) -> v |= 1 << ((int) ch - (int) 'a'))))
+				.collect(Collectors.groupingBy(Tuple::hash, Collectors.counting()))
+				.values().stream().reduce(0L, (n, c) -> n + c * (c-1) / 2 ).intValue();
+		}
+	}
+
 	public static void main(String[] args) throws Exception
 	{
 		Task t = new TaskPlain();
@@ -96,6 +113,10 @@ public class LeetCode2506
 		t = new TaskStream1();
 		n = t.countPairs(Arrays.asList("aba", "aabb", "abcd", "bac", "aabc"));
 		log.debug("stream1, n="+n);
+
+		t = new TaskStream2();
+		n = t.countPairs(Arrays.asList("aba", "aabb", "abcd", "bac", "aabc"));
+		log.debug("stream2, n="+n);
 	}
 
 }
