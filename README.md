@@ -18,6 +18,8 @@ Also in addition to pure algorithmic solution, it's converted to recent Java bas
 functional programming, lambdas, fork/join, virtual threads, tuples(record), concurrent and parallel
 processing approach.
 
+To code I used Java 20 (OpenJDK 20.0.1+9-29).
+
 So let's start:
 
 # [2506 readme]
