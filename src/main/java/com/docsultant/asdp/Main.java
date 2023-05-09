@@ -1,4 +1,4 @@
-package com.docsultant;
+package com.docsultant.asdp;
 
 
 public class Main
