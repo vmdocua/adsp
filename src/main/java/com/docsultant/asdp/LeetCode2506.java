@@ -30,7 +30,7 @@ public class LeetCode2506
 				return res;
 
 			Map<Integer, Integer> map = new HashMap<>();
-			for(String s:lst ) {
+			for(String s:lst) {
 				if( s==null )
 					continue;
 
