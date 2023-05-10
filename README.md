@@ -1,7 +1,7 @@
 # [ADSP]
 Algorithms + Data Structure = Programs
 
-# [LeetCode 2506] 
+# [Count Pairs Of Similar Strings] 
 It somehow happened in this life that only now I started visiting interview in software development industry.
 Looks like interviewers like to ask algorithmic question/live coding. Honestly I played with this kind of tasks 
 last time only during schooldays on Olimpiads in informatics. 
@@ -12,7 +12,7 @@ horizon for most programmers nowadays. But it's definitely necessary and used in
 in narrow range of tasks.
 
 To keep my 30+ years old experience in this area up to date in context of interview, I've decided to 
-get only one easy task from LC, resolve it and share with you my experience.
+get one easy task on public internet, resolve it and share with you my experience.
 
 Also in addition to pure algorithmic solution, it's converted to recent Java based implementations with
 functional programming, lambdas, fork/join, virtual threads, tuples(record), concurrent and parallel
@@ -22,8 +22,29 @@ To code I used Java 20 (OpenJDK 20.0.1+9-29).
 
 So let's start:
 
-# [2506 readme]
-Count Pairs Of Similar Strings
+1) Initially I've created TaskPlain.calc algorithm close to pure algorithms, 
+but it uses binary left shift operator << and hash map implementation from Java, 
+sometimes it can be not allowed when resolving tasks in Olympiads etc.
+2) Java 8 introduced functional programming, streams, lambdas, so reimplemented the
+same algorithm with this in TaskStream1.calc method.
+3) Some time later decided to rewrite all parts algorithm on streams and using 
+tuples/records in TaskStream2.calc method:
+```
+public record Tuple(String word, int hash) {}
+
+public int calc(List<String> lst) throws Exception
+{
+    log.debug("calc(lst=...)");
+    return (lst==null) ? 0 : lst.stream()
+        .filter(s-> s!=null && s.length()>0 )
+        .map( s -> new Tuple(s, s.chars()
+                .reduce(0, (v, ch) -> v |= 1 << ((int) ch - (int) 'a'))))
+        .collect(Collectors.groupingBy(Tuple::hash, Collectors.counting()))
+        .values().stream().reduce(0L, (n, c) -> n + c * (c-1) / 2 ).intValue();
+}
+```
+
+# [Task]
 
 Easy
 
@@ -76,5 +97,9 @@ Return _the number of pairs_ `(i, j)` _such that_ `0 <= i < j <= word.length - 1
 *   `1 <= words[i].length <= 100`
 *   `words[i]` consist of only lowercase English letters.
 
+
+
+# ___
+P.S.: NO WARRANTIES ARE EXTENDED. USE ALL DESCRIBED IDEAS AT YOUR OWN RISK.
 
 

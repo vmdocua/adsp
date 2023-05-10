@@ -10,19 +10,19 @@ import java.util.stream.Collectors;
 
 
 @Slf4j
-public class LeetCode2506
+public class CountPairs
 {
 	public interface Task
 	{
-		int countPairs(List<String> lst) throws Exception;
+		int calc(List<String> lst) throws Exception;
 	}
 
 	public static class TaskPlain implements Task
 	{
 		@Override
-		public int countPairs(List<String> lst) throws Exception
+		public int calc(List<String> lst) throws Exception
 		{
-			log.debug("countPairs(lst=...)");
+			log.debug("calc(lst=...)");
 
 			int res = 0;
 			if( lst==null )
@@ -62,9 +62,9 @@ public class LeetCode2506
 	public static class TaskStream1 implements Task
 	{
 		@Override
-		public int countPairs(List<String> lst) throws Exception
+		public int calc(List<String> lst) throws Exception
 		{
-			log.debug("countPairs(lst=...)");
+			log.debug("calc(lst=...)");
 			int res = 0;
 			if( lst==null )
 				return res;
@@ -93,12 +93,13 @@ public class LeetCode2506
 	public static class TaskStream2 implements Task
 	{
 		@Override
-		public int countPairs(List<String> lst) throws Exception
+		public int calc(List<String> lst) throws Exception
 		{
-			log.debug("countPairs(lst=...)");
+			log.debug("calc(lst=...)");
 			return (lst==null) ? 0 : lst.stream()
 				.filter(s-> s!=null && s.length()>0 )
-				.map( s -> new Tuple(s, s.chars().reduce(0, (v, ch) -> v |= 1 << ((int) ch - (int) 'a'))))
+				.map( s -> new Tuple(s, s.chars()
+						.reduce(0, (v, ch) -> v |= 1 << ((int) ch - (int) 'a'))))
 				.collect(Collectors.groupingBy(Tuple::hash, Collectors.counting()))
 				.values().stream().reduce(0L, (n, c) -> n + c * (c-1) / 2 ).intValue();
 		}
@@ -107,15 +108,15 @@ public class LeetCode2506
 	public static void main(String[] args) throws Exception
 	{
 		Task t = new TaskPlain();
-		int n = t.countPairs(Arrays.asList("aba", "aabb", "abcd", "bac", "aabc"));
+		int n = t.calc(Arrays.asList("aba", "aabb", "abcd", "bac", "aabc"));
 		log.debug("plain, n="+n);
 
 		t = new TaskStream1();
-		n = t.countPairs(Arrays.asList("aba", "aabb", "abcd", "bac", "aabc"));
+		n = t.calc(Arrays.asList("aba", "aabb", "abcd", "bac", "aabc"));
 		log.debug("stream1, n="+n);
 
 		t = new TaskStream2();
-		n = t.countPairs(Arrays.asList("aba", "aabb", "abcd", "bac", "aabc"));
+		n = t.calc(Arrays.asList("aba", "aabb", "abcd", "bac", "aabc"));
 		log.debug("stream2, n="+n);
 	}
 
