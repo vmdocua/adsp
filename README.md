@@ -110,6 +110,35 @@ public int calc(List<String> lst) throws Exception
 }
 ```
 
+4) Then added parallel streams to split word hash computation in parallel and word
+pairs calculation process:
+```
+public int calc(List<String> lst) throws Exception
+{
+    log.debug("calc(lst=...)");
+    return (lst==null) ? 0 : lst.parallelStream()
+                .filter(s -> s != null && s.length() > 0)
+                .map(s -> new Tuple(s, s.chars()
+                        .reduce(0, (v, ch) -> v |= 1 << ((int) ch - (int) 'a'))))
+                .collect(Collectors.groupingByConcurrent(Tuple::hash,
+                        Collectors.counting())
+                ).values().parallelStream()
+                .reduce(0L,
+                        (n, c) -> n + c * (c - 1) / 2,
+                        (a, b) -> a + b
+                ).intValue();
+}
+```
+If we looks at real performance on my machine for 50M words, it's like:
+
+- plain    : 1693ms
+- stream1  : 2743ms
+- parallel : 4196ms
+- stream2  : 4634ms
+
+So plain algorithm wins everything. It also discovered problem with Integer range, 
+when result or intermediate results values are greater than in range.  
+
 # [Task]
 
 Easy
