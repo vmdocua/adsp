@@ -25,8 +25,74 @@ So let's start:
 1) Initially I've created TaskPlain.calc algorithm close to pure algorithms, 
 but it uses binary left shift operator << and hash map implementation from Java, 
 sometimes it can be not allowed when resolving tasks in Olympiads etc.
+```
+public int calc(List<String> lst) throws Exception
+{
+    log.debug("calc(lst=...)");
+
+    int res = 0;
+    if( lst==null )
+        return res;
+
+    if( lst.size()<2 )
+        return res;
+
+    Map<Integer, Integer> map = new HashMap<>();
+    for(String s:lst) {
+        if( s==null )
+            continue;
+
+        if( s.length()==0 )
+            continue;
+
+        int hash = 0;
+        for(char ch:s.toCharArray()) {
+            hash |= 1 << ((int)ch-(int)'a');
+        }
+        //log.debug(""+s+" = "+hash);
+        int c = 1;
+        if( map.containsKey(hash) )
+            c += map.get(hash);
+
+        map.put(hash, c);
+    }
+
+    for(int c : map.values()) {
+        res += c * (c-1) / 2;
+    }
+
+    return res;
+}
+```
 2) Java 8 introduced functional programming, streams, lambdas, so reimplemented the
 same algorithm with this in TaskStream1.calc method.
+```
+public int calc(List<String> lst) throws Exception
+{
+    log.debug("calc(lst=...)");
+    int res = 0;
+    if( lst==null )
+        return res;
+
+    if( lst.size()<2 )
+        return res;
+
+    Map<Integer, Integer> map = new HashMap<>();
+    lst.stream()
+        .filter(s-> s!=null && s.length()>0 )
+        .forEach(s -> {
+            int hash = s.chars()
+                        .reduce(0, (v, ch) -> v |= 1 << ((int) ch - (int) 'a'));
+            map.put(hash, map.computeIfAbsent(hash, k -> 0) + 1);
+        });
+
+    res = map.values().stream()
+            .reduce(0, (n, c) -> n + c * (c-1) / 2 );
+
+    return res;
+}
+
+```
 3) Some time later decided to rewrite all parts algorithm on streams and using 
 tuples/records in TaskStream2.calc method:
 ```
